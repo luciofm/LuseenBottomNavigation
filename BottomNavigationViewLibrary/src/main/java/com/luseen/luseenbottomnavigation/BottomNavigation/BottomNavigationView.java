@@ -7,6 +7,7 @@ import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Typeface;
 import android.os.Build;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
@@ -21,6 +22,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.luseen.luseenbottomnavigation.BottomNavigation.behavior.BottomNavigationBehavior;
 import com.luseen.luseenbottomnavigation.R;
 
 import java.util.ArrayList;
@@ -28,11 +30,13 @@ import java.util.List;
 
 public class BottomNavigationView extends RelativeLayout {
 
+    public static final boolean DEBUG = true;
+
     private OnBottomNavigationItemClickListener onBottomNavigationItemClickListener;
 
     private Context context;
 
-    private final int NAVIGATION_HEIGHT = (int) getResources().getDimension(com.luseen.luseenbottomnavigation.R.dimen.bottom_navigation_height);
+    public final int NAVIGATION_HEIGHT = (int) getResources().getDimension(com.luseen.luseenbottomnavigation.R.dimen.bottom_navigation_height);
 
     private final int NAVIGATION_LINE_WIDTH = (int) getResources().getDimension(R.dimen.bottom_navigation_line_width);
 
@@ -79,6 +83,7 @@ public class BottomNavigationView extends RelativeLayout {
     private ViewPager mViewPager;
 
     private Typeface font;
+    private CoordinatorLayout.Behavior mBehavior;
 
 
     public BottomNavigationView(Context context) {
@@ -114,6 +119,27 @@ public class BottomNavigationView extends RelativeLayout {
     }
 
     @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+
+        final CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) getLayoutParams();
+
+        if (null == mBehavior) {
+            if (CoordinatorLayout.LayoutParams.class.isInstance(params)) {
+                mBehavior = params.getBehavior();
+
+                if (isInEditMode()) {
+                    return;
+                }
+
+                if (BottomNavigationBehavior.class.isInstance(mBehavior)) {
+                    ((BottomNavigationBehavior) mBehavior).setLayoutValues(NAVIGATION_HEIGHT, /*bottomInset*/ 0);
+                }
+            }
+        }
+    }
+
+    @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
@@ -143,7 +169,6 @@ public class BottomNavigationView extends RelativeLayout {
 
 
     }
-
 
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
