@@ -222,7 +222,7 @@ public final class BottomNavigationBehavior<V extends View> extends VerticalScro
     private void ensureOrCancelAnimator(final CoordinatorLayout coordinatorLayout, final V child) {
         if (mOffsetValueAnimator == null) {
             mOffsetValueAnimator = ViewCompat.animate(child);
-            mOffsetValueAnimator.setDuration(100);
+            mOffsetValueAnimator.setDuration(coordinatorLayout.getResources().getInteger(android.R.integer.config_shortAnimTime));
             mOffsetValueAnimator.setInterpolator(INTERPOLATOR);
             mOffsetValueAnimator.setUpdateListener(new ViewPropertyAnimatorUpdateListener() {
                 @Override
