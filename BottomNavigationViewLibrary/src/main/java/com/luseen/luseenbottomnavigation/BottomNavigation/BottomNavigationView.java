@@ -476,6 +476,13 @@ public class BottomNavigationView extends RelativeLayout {
     }
 
     /**
+     * Enable slide animation when using ViewPager
+     */
+    public void enableViewPagerSlide() {
+        viewPagerSlide = true;
+    }
+
+    /**
      * Change Active text size
      *
      * @param textActiveSize size
