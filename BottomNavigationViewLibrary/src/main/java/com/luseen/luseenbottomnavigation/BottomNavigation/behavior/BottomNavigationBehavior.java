@@ -104,6 +104,14 @@ public final class BottomNavigationBehavior<V extends View> extends VerticalScro
         //log(TAG, DEBUG, "height: %d, translucent: %b, maxOffset: %d, bottomInset: %d", height, translucentNavigation, maxOffset, bottomInset);
     }
 
+    public void show(CoordinatorLayout coordinatorLayout, V child) {
+        if (hidden) {
+            offset = 0;
+            hidden = false;
+            animateOffset(coordinatorLayout, child, 0);
+        }
+    }
+
     protected boolean isFloatingActionButton(View dependency) {
         return FloatingActionButton.class.isInstance(dependency);
     }
