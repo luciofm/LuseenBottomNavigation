@@ -50,7 +50,7 @@ public class BottomNavigationView extends RelativeLayout {
 
     private int itemActiveColorWithoutColoredBackground = -1;
 
-    private static int currentItem = 0;
+    private int currentItem = 0;
 
     private int navigationWidth;
 
