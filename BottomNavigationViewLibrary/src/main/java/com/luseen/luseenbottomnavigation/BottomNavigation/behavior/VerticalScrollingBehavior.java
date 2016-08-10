@@ -20,11 +20,15 @@ package com.luseen.luseenbottomnavigation.BottomNavigation.behavior;
 
 import android.content.Context;
 import android.os.Parcelable;
+import android.support.annotation.IntDef;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.WindowInsetsCompat;
 import android.util.AttributeSet;
 import android.view.View;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /**
  * Created by Nikola on 11/22/2015.
@@ -44,6 +48,14 @@ public abstract class VerticalScrollingBehavior<V extends View> extends Coordina
 
     public VerticalScrollingBehavior() {
         super();
+    }
+
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({ScrollDirection.SCROLL_DIRECTION_UP, ScrollDirection.SCROLL_DIRECTION_DOWN})
+    public @interface ScrollDirection {
+        int SCROLL_DIRECTION_UP = 1;
+        int SCROLL_DIRECTION_DOWN = -1;
+        int SCROLL_NONE = 0;
     }
 
     @Override
