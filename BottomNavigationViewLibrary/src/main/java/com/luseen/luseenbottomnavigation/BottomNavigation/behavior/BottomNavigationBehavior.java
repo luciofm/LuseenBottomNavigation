@@ -20,12 +20,15 @@ package com.luseen.luseenbottomnavigation.BottomNavigation.behavior;
 
 import android.content.Context;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPropertyAnimatorCompat;
+import android.support.v4.view.ViewPropertyAnimatorListenerAdapter;
 import android.support.v4.view.ViewPropertyAnimatorUpdateListener;
 import android.support.v4.view.animation.LinearOutSlowInInterpolator;
 import android.util.AttributeSet;
@@ -167,6 +170,7 @@ public final class BottomNavigationBehavior<V extends View> extends VerticalScro
             dependent = dependentViewHashMap.get(dependency);
         }
 
+        log(TAG, INFO);
         if (null != dependent) {
             return dependent.onDependentViewChanged(parent, child);
         }
@@ -193,6 +197,7 @@ public final class BottomNavigationBehavior<V extends View> extends VerticalScro
 
     @Override
     public void onDirectionNestedPreScroll(CoordinatorLayout coordinatorLayout, V child, View target, int dx, int dy, int[] consumed, @ScrollDirection int scrollDirection) {
+        log(TAG, INFO, "Scroll x: %d - y: %d", dx, dy);
         offset += dy;
         if (offset < -scaledTouchSlop) {
             handleDirection(coordinatorLayout, child, scrollDirection);
@@ -227,25 +232,70 @@ public final class BottomNavigationBehavior<V extends View> extends VerticalScro
         mOffsetValueAnimator.translationY(offset).start();
     }
 
+    Handler handler = new Handler(Looper.getMainLooper());
+
     private void ensureOrCancelAnimator(final CoordinatorLayout coordinatorLayout, final V child) {
         if (mOffsetValueAnimator == null) {
             mOffsetValueAnimator = ViewCompat.animate(child);
             mOffsetValueAnimator.setDuration(coordinatorLayout.getResources().getInteger(android.R.integer.config_shortAnimTime));
             mOffsetValueAnimator.setInterpolator(INTERPOLATOR);
-            mOffsetValueAnimator.setUpdateListener(new ViewPropertyAnimatorUpdateListener() {
-                @Override
-                public void onAnimationUpdate(View view) {
-                    if (null != fabDependentView) {
-                        fabDependentView.onDependentViewChanged(coordinatorLayout, child);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                mOffsetValueAnimator.setUpdateListener(new ViewPropertyAnimatorUpdateListener() {
+                    @Override
+                    public void onAnimationUpdate(View view) {
+                        if (null != fabDependentView) {
+                            fabDependentView.onDependentViewChanged(coordinatorLayout, child);
+                        }
+                        if (null != snackbarDependentView) {
+                            snackbarDependentView.onDependentViewChanged(coordinatorLayout, child);
+                        }
+
                     }
-                    if (null != snackbarDependentView) {
-                        snackbarDependentView.onDependentViewChanged(coordinatorLayout, child);
+                });
+            } else {
+                updateDependentViewsRunnable.setViews(coordinatorLayout, child);
+                mOffsetValueAnimator.setListener(new ViewPropertyAnimatorListenerAdapter(){
+                    @Override
+                    public void onAnimationStart(View view) {
+                        handler.postDelayed(updateDependentViewsRunnable, 16);
                     }
 
-                }
-            });
+                    @Override
+                    public void onAnimationEnd(View view) {
+                        handler.removeCallbacks(updateDependentViewsRunnable);
+                    }
+
+                    @Override
+                    public void onAnimationCancel(View view) {
+                        handler.removeCallbacks(updateDependentViewsRunnable);
+                    }
+                });
+            }
         } else {
             mOffsetValueAnimator.cancel();
+        }
+    }
+
+    public AnimationRunnable updateDependentViewsRunnable = new AnimationRunnable() {
+        @Override
+        public void run() {
+            if (null != fabDependentView) {
+                fabDependentView.onDependentViewChanged(coordinatorLayout, child);
+            }
+            if (null != snackbarDependentView) {
+                snackbarDependentView.onDependentViewChanged(coordinatorLayout, child);
+            }
+            handler.postDelayed(this, 16);
+        }
+    };
+
+    private abstract static class AnimationRunnable implements Runnable {
+        CoordinatorLayout coordinatorLayout;
+        View child;
+
+        protected void setViews(CoordinatorLayout coordinatorLayout, View child) {
+            this.coordinatorLayout = coordinatorLayout;
+            this.child = child;
         }
     }
 
