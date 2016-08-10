@@ -170,7 +170,7 @@ public final class BottomNavigationBehavior<V extends View> extends VerticalScro
             dependent = dependentViewHashMap.get(dependency);
         }
 
-        log(TAG, INFO);
+
         if (null != dependent) {
             return dependent.onDependentViewChanged(parent, child);
         }
