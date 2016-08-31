@@ -76,6 +76,11 @@ public class MainActivity extends AppCompatActivity {
                         break;
                 }
             }
+
+            @Override
+            public void onItemReselected(int index) {
+                // Do nothing
+            }
         });
 
         button.setOnClickListener(new View.OnClickListener() {
