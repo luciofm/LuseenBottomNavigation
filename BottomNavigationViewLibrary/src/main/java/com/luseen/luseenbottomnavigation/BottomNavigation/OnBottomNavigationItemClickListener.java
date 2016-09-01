@@ -5,4 +5,5 @@ package com.luseen.luseenbottomnavigation.BottomNavigation;
  */
 public interface OnBottomNavigationItemClickListener {
     void onNavigationItemClick(int index);
+    void onItemReselected(int index);
 }

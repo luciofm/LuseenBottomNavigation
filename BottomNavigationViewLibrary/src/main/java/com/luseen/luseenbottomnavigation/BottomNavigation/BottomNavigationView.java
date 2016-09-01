@@ -297,6 +297,9 @@ public class BottomNavigationView extends RelativeLayout {
     private void onBottomNavigationItemClick(final int itemIndex) {
 
         if (currentItem == itemIndex) {
+            if (onBottomNavigationItemClickListener != null) {
+                onBottomNavigationItemClickListener.onItemReselected(itemIndex);
+            }
             return;
         }
 
