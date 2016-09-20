@@ -562,4 +562,8 @@ public class BottomNavigationView extends RelativeLayout {
         onBottomNavigationItemClick(position);
         return bottomNavigationItems.get(position);
     }
+
+    public int getTabsCount() {
+        return bottomNavigationItems.size();
+    }
 }
